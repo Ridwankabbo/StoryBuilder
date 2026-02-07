@@ -29,3 +29,24 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             )
                 
         return user
+    
+    
+""" ************************* OTP verification serializer **************************** """
+class OtpVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField()
+    
+""" ************************ Login verification serializer *************************"""
+class LoginVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    
+""" ************************** Forgot password serializer ************************* """
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    
+""" *************************** Reset password serializer *************************** """
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField()
+    password = serializers.CharField()
