@@ -6,7 +6,7 @@ class StorySentenceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Sentence
-        fields = '__all__'
+        fields = ['id','text', 'order']
 
 class StorySerializer(serializers.ModelSerializer):
     class Meta:
