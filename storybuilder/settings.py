@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'channels',
     'user',
+    'story',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,30 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'storybuilder.wsgi.application'
+
+# Auth user
+AUTH_USER_MODEL='user.User'
+
+
+# REST FRAMEWORK 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+
+# CHANEL 
+ASGI_APPLICATION = 'storybuilder.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],  # Redis server
+        },
+    },
+}
+
 
 
 # Database
@@ -124,3 +149,29 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# JWT token customigation
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    
+    'AUTHENTICATION_METHOD':'email',
+    
+    'USER_ID_FIELD':'id',
+    'USER_ID_CLAIM':'user_id',
+    
+    'ACCESS_TOKEN_LIFETIME':timedelta(hours=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    'TOKEN_OBTAIN_SERIALIZER': 'user.serializers.CustomTokenObtainPariSerializer',
+    
+    'AUTH_HEADER_TYPES': ('Bearer'),
+    
+    'TOKEN_USER_CLASS':'user.User',
+    
+}
+
+
+
