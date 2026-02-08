@@ -9,7 +9,9 @@ class StorySentenceSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class StorySerializer(serializers.ModelSerializer):
-    sentence = StorySentenceSerializer()
     class Meta:
         model = Story
-        fields = ['title', 'created_by', 'sentence']
+        fields = ['id', 'title']
+        
+
+

@@ -151,4 +151,27 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# JWT token customigation
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    
+    'AUTHENTICATION_METHOD':'email',
+    
+    'USER_ID_FIELD':'id',
+    'USER_ID_CLAIM':'user_id',
+    
+    'ACCESS_TOKEN_LIFETIME':timedelta(hours=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    'TOKEN_OBTAIN_SERIALIZER': 'user.serializers.CustomTokenObtainPariSerializer',
+    
+    'AUTH_HEADER_TYPES': ('Bearer'),
+    
+    'TOKEN_USER_CLASS':'user.User',
+    
+}
+
+
 

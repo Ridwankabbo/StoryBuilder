@@ -92,7 +92,7 @@ def ResetPasswordView(request):
         try:
             user = User.objects.get(email=email)
             if user.otp == otp:
-                user.password = password
+                user.set_password(password)
                 user.otp = None
                 user.save()
                 
