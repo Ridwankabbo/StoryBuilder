@@ -7,7 +7,7 @@ from .serializers import (
     StorySerializer,
     StorySentenceSerializer
 )
-from .models import Story, Sentence
+from .models import Story
 # Create your views here.
 
 """ 
@@ -46,25 +46,35 @@ class StoryDetails(APIView):
 
 """ 
     ===============================
-        Add sentence serializer
+        Sentence View
     ===============================
 """
 from django.db import transaction
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-class AddSentence(APIView):
+from .models import Sentence
+from .permissions import IsAuthorOrStoryCreator
+class SentenceView(APIView):
     
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrStoryCreator]
+    
+    def get(self, request):
+        # Why use get_object_or_404 on Story first? It ensures the story exists before querying sentences.
+        story_id = request.data.get('story_id')
+        story = get_object_or_404(Story, pk=story_id)
+        sentences = Sentence.objects.filter(story=story).order_by('order')  # Fetch all sentences for the story
+        serializer = StorySentenceSerializer(sentences, many=True)
+        return Response(serializer.data)
     
     def post(self, request, pk):
         story = Story.objects.get(pk=pk)
-        sumitted_version = request.data.get('version')
+        submitted_version = request.data.get('version')
         
-        if not sumitted_version:
+        if not submitted_version:
             return Response({
                 'response':'You must send the current version number'
             })
-        if int(sumitted_version) != story.version:
+        if int(submitted_version) != story.version:
             return Response({
                 'response':'Conflict: story was updated by someone else. please refresh',
                 'current_version':story.version
@@ -95,9 +105,70 @@ class AddSentence(APIView):
             
                 return Response(StorySentenceSerializer(sentence).data)
             return Response(serializer.errors)
-            
-        
-        
     
+    def patch(self, request):
+        sentence_id = request.data.get('sentence_id')
+        sentence = get_object_or_404(Sentence, id=sentence_id)
         
+        self.check_object_permissions(request, sentence)
+        
+        story = sentence.story
+        submitted_version = request.data.get('version')
+        
+        if not submitted_version:
+            return Response({
+                'response':'You must send the current version number'
+            })
+        if int(submitted_version) != story.version:
+            return Response({
+                'response':'Conflict: story was updated by someone else. please refresh',
+                'current_version':story.version
+            })
+        
+        with transaction.atomic():
+            serializer = StorySentenceSerializer(sentence, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                story.version += 1  # Increment for delete too?
+                story.save(update_fields=['version'])
+                
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    f"story_{story.id}",
+                    {
+                        "type":"on_sentence_change",
+                        "sentence":StorySentenceSerializer(sentence).data,
+                        "new_version":story.version
+                    }
+                )
+                
+                return Response(serializer.data)
+        return Response(serializer.errors)
+                
+                
+            
+    def delete(self, request):
+        sentence_id = request.data.get('sentence_id')
+        sentence = get_object_or_404(Sentence, pk=sentence_id)
+        self.check_object_permissions(request, sentence)
+        
+        story = sentence.story
+        
+        with transaction.atomic():
+            sentence.delete()
+            story.version += 1  # Increment for delete too?
+            story.save(update_fields=['version'])
+            
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"story_{story.id}",
+                {
+                    "type":"on_sentence_change",
+                    "sentence":StorySentenceSerializer(sentence).data,
+                    "new_version":story.version
+                })
+            
+        return Response({"response":"Sentence deleted success"})
+            
+                
                     

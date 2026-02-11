@@ -32,3 +32,9 @@ class StoryConsumer(AsyncWebsocketConsumer):
             "type": "sentence",
             "sentence": sentence
         }))
+    async def on_sentence_change(self, envent):
+        sentence = envent['sentence']
+        await self.send(text_data=json.dumps({
+            "type":"sentence",
+            "sentence":sentence
+        }))
