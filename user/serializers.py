@@ -59,11 +59,19 @@ class ResetPasswordSerializer(serializers.Serializer):
     ============================================
 """
 
+<<<<<<< HEAD
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from rest_framework import exceptions
 from django.contrib.auth import authenticate
 
 class CustomTokenObtainPariSerializer(TokenObtainSerializer):
+=======
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import exceptions
+from django.contrib.auth import authenticate
+
+class CustomTokenObtainPariSerializer(TokenObtainPairSerializer):
+>>>>>>> development
     username_field = 'email'
     
     def validate(self, attrs):
@@ -76,7 +84,12 @@ class CustomTokenObtainPariSerializer(TokenObtainSerializer):
                 raise exceptions.AuthenticationFailed("No active account found with the given credentials")
             if not user.is_active:
                 raise exceptions.AuthenticationFailed("Account isn't active")
+<<<<<<< HEAD
             else:
                 raise exceptions.AuthenticationFailed("must include email and password")
+=======
+        else:
+            raise exceptions.AuthenticationFailed("must include email and password")
+>>>>>>> development
         
         return super().validate(attrs) 
