@@ -80,16 +80,10 @@ AUTH_USER_MODEL='user.User'
 
 # REST FRAMEWORK 
 REST_FRAMEWORK = {
-<<<<<<< HEAD
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-=======
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         
     ],
->>>>>>> development
 }
 
 
@@ -180,9 +174,3 @@ SIMPLE_JWT = {
     'TOKEN_USER_CLASS':'user.User',
     
 }
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> development

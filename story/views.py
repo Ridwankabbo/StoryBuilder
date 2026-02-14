@@ -5,14 +5,9 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .serializers import (
     StorySerializer,
-<<<<<<< HEAD
-)
-from .models import Story, Sentence
-=======
     StorySentenceSerializer
 )
-from .models import Story
->>>>>>> development
+from .models import Story, Sentence
 # Create your views here.
 
 """ 
@@ -48,9 +43,6 @@ class StoryDetails(APIView):
         story = get_object_or_404(Story, pk=pk)
         serializer = StorySerializer(story)
         return Response(serializer.data)
-<<<<<<< HEAD
-        
-=======
 
 """ 
     ===============================
@@ -179,5 +171,4 @@ class SentenceView(APIView):
         return Response({"response":"Sentence deleted success"})
             
                 
->>>>>>> development
                     
