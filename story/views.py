@@ -36,12 +36,14 @@ class StoryListView(APIView):
         Get story details
     ========================
 """
+from .serializers import StoryWithContributiorSerializer
 class StoryDetails(APIView):
     permission_classes = [IsAuthenticated]
     
-    def get(self, request, pk):
-        story = get_object_or_404(Story, pk=pk)
-        serializer = StorySerializer(story)
+    def get(self, request):
+        story_id = request.data.get('story_id')
+        story = Story.objects.get(id=story_id)
+        serializer = StoryWithContributiorSerializer(story)
         return Response(serializer.data)
 
 """ 
@@ -66,9 +68,15 @@ class SentenceView(APIView):
         serializer = StorySentenceSerializer(sentences, many=True)
         return Response(serializer.data)
     
-    def post(self, request, pk):
-        story = Story.objects.get(pk=pk)
+    def post(self, request):
+        story_id = request.data.get('story_id')
+        story = Story.objects.get(pk=story_id)
         submitted_version = request.data.get('version')
+        
+        if request.user != story.created_by and request.user not in story.contributors.all():
+            return Response({
+                "response": "You are not a contributor of the story"
+            })
         
         if not submitted_version:
             return Response({
@@ -171,4 +179,44 @@ class SentenceView(APIView):
         return Response({"response":"Sentence deleted success"})
             
                 
-                    
+
+"""    
+    ====================================
+        Story Contributor Request view
+    ====================================
+"""
+from .serializers import StoryContributionRequestSerializer
+from .models import StoriColaborationRequest
+class ContirbuterRequestView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        sotry_id = request.data.get('story_id')
+        story = get_object_or_404(Story, pk=sotry_id)
+        print(story)
+        requester = story.story_requestes.filter(request_status='Pending')
+        print(requester)
+        serializer = StoryContributionRequestSerializer(requester, many=True)
+        # print(serializer)
+        
+        return Response(serializer.data)
+    
+    def post(self, request):
+        story = get_object_or_404(Story, pk=request.data.get('story_id'))
+        
+        if StoriColaborationRequest.objects.filter(story=story.id, requester=request.user).exists():
+            return Response({
+                "response": "Request already send"
+            })
+        if request.user == story.created_by:
+            return Response({
+                "response" : "Creator can't request for contribute"
+            })
+        
+        contoibution_request = StoriColaborationRequest.objects.create(
+            story = story,
+            requester = request.user
+        )
+        
+        return Response(StoryContributionRequestSerializer(contoibution_request).data)
