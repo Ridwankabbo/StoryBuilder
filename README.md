@@ -38,3 +38,6 @@ An Collaborative sotry builder Backend application using REST API for multi-user
     
     - sentence url : https://127.0.0.1:8000/story/
     sentence/   
+
+    - collaboration request to contribute in story url: https://127.0.0.1:8000/story/story-contributors/
+    
