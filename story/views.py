@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render
 from rest_framework.decorators import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -36,16 +37,15 @@ class StoryListView(APIView):
         Get story details
     ========================
 """
-from .serializers import StoryWithContributiorSerializer
+from .serializers import StoryContributionRequestSerializer, StoryWithContributorsSerializer
 class StoryDetails(APIView):
+    
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        story_id = request.data.get('story_id')
-        story = Story.objects.get(id=story_id)
-        serializer = StoryWithContributiorSerializer(story)
+        story = get_object_or_404(Story, pk=request.data.get('story_id'))
+        serializer = StoryWithContributorsSerializer(story)
         return Response(serializer.data)
-
 """ 
     ===============================
         Sentence View
@@ -186,17 +186,19 @@ class SentenceView(APIView):
     ====================================
 """
 from .serializers import StoryContributionRequestSerializer
+from  rest_framework.decorators import action
 from .models import StoriColaborationRequest
-class ContirbuterRequestView(APIView):
+
+class ContributionRequestView(APIView):
     
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
         sotry_id = request.data.get('story_id')
         story = get_object_or_404(Story, pk=sotry_id)
-        print(story)
-        requester = story.story_requestes.filter(request_status='Pending')
-        print(requester)
+        # print(story)
+        requester = StoriColaborationRequest.objects.filter(story=story)
+        # print(requester)
         serializer = StoryContributionRequestSerializer(requester, many=True)
         # print(serializer)
         
@@ -220,3 +222,24 @@ class ContirbuterRequestView(APIView):
         )
         
         return Response(StoryContributionRequestSerializer(contoibution_request).data)
+    
+    
+    def patch(self, request):
+        story = get_object_or_404(Story, pk=request.data.get('story_id'))
+        print(story)
+        if request.user != story.created_by:
+            return Response({"response":"Creator only"})
+            
+        req = get_object_or_404(StoriColaborationRequest, pk=request.data.get('request_id'), story=story)
+            
+        new_status = request.data.get('status')
+        if new_status not in ['Accepted', 'Cancled']:
+            return Response({"response":"Invalid status"})
+            
+        req.request_status = new_status
+        req.save()
+            
+        if new_status == 'accepted':
+            story.contributors.add(req.requester)
+                
+        return Response(StoryContributionRequestSerializer(req).data)

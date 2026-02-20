@@ -16,7 +16,7 @@ class StorySentenceSerializer(serializers.ModelSerializer):
 
 """    
     ===========================================
-        Story contribution request serializer
+        Story conlaboration request serializer
     ===========================================
 """
 class StoryContributionRequestSerializer(serializers.ModelSerializer):
@@ -32,7 +32,7 @@ class StoryContributionRequestSerializer(serializers.ModelSerializer):
         Story with contribution serializer
     =======================================
 """   
-class StoryWithContributiorSerializer(serializers.ModelSerializer):
+class StoryWithContributorsSerializer(serializers.ModelSerializer):
     contributors = serializers.SlugRelatedField(
         many=True, read_only=True, slug_field='username'
     )
