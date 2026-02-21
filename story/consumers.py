@@ -18,7 +18,7 @@ class StoryConsumer(AsyncWebsocketConsumer):
             
         )
         
-        if is_allowed:
+        if not is_allowed:
             await self.close(code=4003)
             return
         
