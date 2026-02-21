@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     'channels',
     'user',
     'story',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,6 +79,11 @@ WSGI_APPLICATION = 'storybuilder.wsgi.application'
 # Auth user
 AUTH_USER_MODEL='user.User'
 
+# CORS ORIGINS Configuration
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = {
+    'http://localhost:5173',
+}
 
 # REST FRAMEWORK 
 REST_FRAMEWORK = {
