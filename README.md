@@ -27,7 +27,7 @@ An Collaborative sotry builder Backend application using REST API for multi-user
     
     - reset password url : https://127.0.0.1:8000/user/reset-password/
     
-    -login url : https://127.0.0.1:8000/user/login/api/token
+    - login url : https://127.0.0.1:8000/user/login/api/token
     
     - registration url : https://127.0.0.1:8000/user/api/token/refresh/
 
