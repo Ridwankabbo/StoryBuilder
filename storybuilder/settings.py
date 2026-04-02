@@ -167,6 +167,12 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME':timedelta(hours=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     
+    'AUTH_COOKIE':'access_token',
+    'AUTH_COOKIE_HTTP_ONLY':True,
+    'AUTH_COOKIE_SECURE': True,
+    'AUTH_COOKIE_SAMESITE':'Lax',
+    
+    
     'TOKEN_OBTAIN_SERIALIZER': 'user.serializers.CustomTokenObtainPariSerializer',
     
     'AUTH_HEADER_TYPES': ('Bearer'),
