@@ -43,12 +43,10 @@ INSTALLED_APPS = [
     'channels',
     'user',
     'story',
-    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,11 +77,6 @@ WSGI_APPLICATION = 'storybuilder.wsgi.application'
 # Auth user
 AUTH_USER_MODEL='user.User'
 
-# CORS ORIGINS Configuration
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = {
-    'http://localhost:5173',
-}
 
 # REST FRAMEWORK 
 REST_FRAMEWORK = {
@@ -173,6 +166,12 @@ SIMPLE_JWT = {
     
     'ACCESS_TOKEN_LIFETIME':timedelta(hours=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    'AUTH_COOKIE':'access_token',
+    'AUTH_COOKIE_HTTP_ONLY':True,
+    'AUTH_COOKIE_SECURE': True,
+    'AUTH_COOKIE_SAMESITE':'Lax',
+    
     
     'TOKEN_OBTAIN_SERIALIZER': 'user.serializers.CustomTokenObtainPariSerializer',
     
